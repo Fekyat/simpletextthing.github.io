@@ -3,18 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dialog Editor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            margin: 20px;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
             background-color: #252722;
             font-family: 'Source Sans 3', sans-serif;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        svg {
+        .pattern-container {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            opacity: 0.06;
+            pointer-events: none;
+            transform: rotate(-9.65deg);
+            overflow: hidden;
+        }
+
+        .pattern-bg {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            animation: scrollPattern 15s linear infinite;
+        }
+
+        @keyframes scrollPattern {
+            from {
+                transform: translate(0, 0);
+            }
+            to {
+                transform: translate(100px, 100px);
+            }
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        svg#thing {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             overflow: visible;
@@ -23,120 +65,333 @@
         .editable-text-area {
             font-family: 'Source Sans 3', sans-serif;
             font-size: 36px;
+            font-weight: 400;
             color: #27271D;
             outline: none;
             line-height: 1.2;
             word-wrap: break-word;
+            white-space: pre-wrap;
             margin: 0;
             padding: 0;
         }
 
-        button {
+        .download-btn {
             margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #02DA91;
             border: none;
-            border-radius: 5px;
+            background: none;
+            padding: 0;
             cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 192px;
+            height: 45.5px;
         }
 
-        button:hover {
-            background: #01c582;
+        .download-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .credits {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Source Sans 3', sans-serif;
+            font-weight: 400;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.78);
+            text-shadow: 
+                -1px -1px 0 rgba(0,0,0,0.7), 1px -1px 0 rgba(0,0,0,0.7),
+                -1px 1px 0 rgba(0,0,0,0.7), 1px 1px 0 rgba(0,0,0,0.7);
+            text-align: right;
+            line-height: 1.4;
+            z-index: 10;
         }
     </style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<svg id="thing" width="592" height="164" viewBox="0 0 592 164" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path id="bg" d="M0 34L34 0H592V164H0V34Z" fill="#FEF8EC" fill-opacity="0.85"/>
-    <path d="M25 0L0 25V0H25Z" fill="#02DA91"/>
-    <path id="line" d="M36.5 9.5L9 37V154.5H582V9.5H36.5Z" stroke="#27271D" stroke-width="2"/>
-    
-    <foreignObject x="23" y="24" width="545.5" height="117.5">
-        <div id="txt" class="editable-text-area" contenteditable="true" xmlns="http://www.w3.org/1999/xhtml">
-            Labubu
-        </div>
-    </foreignObject>
-</svg>
+<div class="pattern-container">
+    <svg class="pattern-bg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <pattern id="gridPattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+                <rect x="0" y="0" width="100" height="100" fill="none" stroke="white" stroke-width="0.5"/>
+            </pattern>
+        </defs>
+        <rect x="0" y="0" width="100%" height="100%" fill="url(#gridPattern)"/>
+    </svg>
+</div>
 
-<button onclick="save()">save</button>
+<div class="main-content">
+    <svg id="thing" width="592" height="164" viewBox="0 0 592 164" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs></defs>
+        <path id="bg" d="M0 34L34 0H592V164H0V34Z" fill="#FEF8EC" fill-opacity="0.85"/>
+        <path d="M25 0L0 25V0H25Z" fill="#02DA91"/>
+        <path id="line" d="M36.5 9.5L9 37V154.5H582V9.5H36.5Z" stroke="#27271D" stroke-width="2"/>
+        
+        <foreignObject x="23" y="24" width="545.5" height="117.5">
+            <div id="txt" class="editable-text-area" contenteditable="true" xmlns="http://www.w3.org/1999/xhtml">Type your long dialog here and see how it automatically wraps to the next line. You can also press Enter for manual line breaks.</div>
+        </foreignObject>
+    </svg>
+
+    <button class="download-btn" onclick="downloadPNG()">
+        <svg width="192" height="45.5" viewBox="0 0 192 45.5" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g filter="url(#filter0_d_95_2_small)">
+                <rect width="190" height="43.5" rx="3.5" fill="#EDE5D8"/>
+            </g>
+            <path d="M103.717 43.5L14.3047 0H177.661L103.717 43.5Z" fill="#FAF1E4"/>
+            <path d="M0 14.5L15 0H0V14.5Z" fill="#04DF8B"/>
+            <text x="96" y="28" font-family="Source Sans 3" font-weight="600" font-size="16" fill="#27271D" text-anchor="middle">Download As PNG</text>
+            <defs>
+                <filter id="filter0_d_95_2_small" x="0" y="0" width="192" height="45.5" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                    <feOffset dx="2" dy="2"/>
+                    <feComposite in2="hardAlpha" operator="out"/>
+                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_95_2_small"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_95_2_small" result="shape"/>
+                </filter>
+            </defs>
+        </svg>
+    </button>
+</div>
+
+<div class="credits">
+    Website Made by Fekyat.<br>
+    XXL Woofia by © 2025 S.G.Arts Ltd. All Rights Reserved.
+</div>
 
 <script>
     const txt = document.getElementById('txt');
     const thing = document.getElementById('thing');
-    const bg = document.getElementById('bg');
-    const line = document.getElementById('line');
-    const box = thing.querySelector('foreignObject');
-
-    const h1 = 164;
-    const h2 = 117.5;
-    const h3 = 154.5;
     
-    function fix() {
-        const h = txt.scrollHeight;
-        const d = h - h2;
+    const h1 = 164; // initial svg height
+    const h2 = 117.5; // initial foreignObject height
+    const h3 = 154.5; // initial bottom line y-pos
+    const SAFETY_BUFFER = 10; // Extra pixels to prevent text overflow
+    
+    // Auto-resizing logic for the SVG element on the page
+    function fixSvgHeight() {
+        const textScrollHeight = txt.scrollHeight;
+        const requiredTextHeight = Math.max(h2, textScrollHeight);
+        const verticalPadding = h1 - h2;
+        const newSvgHeight = requiredTextHeight + verticalPadding;
+        updateSvgDimensions(thing, newSvgHeight);
+        return newSvgHeight;
+    }
+    
+    /**
+     * A helper function to update an SVG's height, viewBox, and path data.
+     * This is used by both the live preview and the download function.
+     * @param {SVGElement} svgNode - The SVG element to modify.
+     * @param {number} newHeight - The target height for the SVG.
+     */
+    function updateSvgDimensions(svgNode, newHeight) {
+        const bgPath = svgNode.querySelector('#bg');
+        const linePath = svgNode.querySelector('#line');
+        const foreignObj = svgNode.querySelector('foreignObject');
+
+        svgNode.setAttribute('height', newHeight);
+        svgNode.setAttribute('viewBox', `0 0 592 ${newHeight}`);
         
-        if (d > 0) {
-            const nh = h1 + d;
-            
-            thing.setAttribute('height', nh);
-            thing.setAttribute('viewBox', `0 0 592 ${nh}`);
-            
-            box.setAttribute('height', h);
-            
-            bg.setAttribute('d', `M0 34L34 0H592V${nh}H0V34Z`);
-            line.setAttribute('d', `M36.5 9.5L9 37V${h3 + d}H582V9.5H36.5Z`);
-        } else {
-            thing.setAttribute('height', h1);
-            thing.setAttribute('viewBox', '0 0 592 164');
-            box.setAttribute('height', h2);
-            bg.setAttribute('d', 'M0 34L34 0H592V164H0V34Z');
-            line.setAttribute('d', 'M36.5 9.5L9 37V154.5H582V9.5H36.5Z');
+        if (foreignObj) {
+            const verticalPadding = h1 - h2;
+            foreignObj.setAttribute('height', newHeight - verticalPadding);
         }
+
+        bgPath.setAttribute('d', `M0 34L34 0H592V${newHeight}H0V34Z`);
+        
+        const heightDelta = newHeight - h1;
+        linePath.setAttribute('d', `M36.5 9.5L9 37V${h3 + heightDelta}H582V9.5H36.5Z`);
     }
 
-    const obs = new ResizeObserver(() => {
-        fix();
+    txt.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text');
+        document.execCommand('insertText', false, text);
     });
-
-    obs.observe(txt);
     
-    window.onload = () => {
-        fix();
-    };
+    // Use ResizeObserver for robust height calculation
+    const obs = new ResizeObserver(fixSvgHeight);
+    obs.observe(txt);
+    window.onload = fixSvgHeight;
 
-    function save() {
-        const c = document.createElement('canvas');
-        const ctx = c.getContext('2d');
+    // --- FIXED DOWNLOAD FUNCTION ---
+    const fontCache = {};
+    async function getFontDataURL(url) {
+        if (fontCache[url]) return fontCache[url];
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                fontCache[url] = reader.result;
+                resolve(reader.result);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    function wrapText(context, text, maxWidth) {
+        const lines = [];
+        const paragraphs = text.split('\n');
         
-        const data = new XMLSerializer().serializeToString(thing);
-        const blob = new Blob([data], {type: 'image/svg+xml;charset=utf-8'});
-        const url = URL.createObjectURL(blob);
+        for (const paragraph of paragraphs) {
+            if (paragraph === '') {
+                lines.push('');
+                continue;
+            }
+            const words = paragraph.split(' ');
+            let currentLine = words[0] || '';
+
+            for (let i = 1; i < words.length; i++) {
+                const word = words[i];
+                const testLine = currentLine + " " + word;
+                const width = context.measureText(testLine).width;
+                if (width < maxWidth) {
+                    currentLine = testLine;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            lines.push(currentLine);
+        }
+        return lines;
+    }
+
+    async function downloadPNG() {
+        const scale = 2;
+        const svgElement = document.getElementById('thing');
+        const textElement = document.getElementById('txt');
         
+        // Get the actual current dimensions
+        const currentSvgHeight = parseFloat(svgElement.getAttribute('height'));
+        const foreignObject = svgElement.querySelector('foreignObject');
+        const currentForeignHeight = parseFloat(foreignObject.getAttribute('height'));
+        
+        // Clone the SVG
+        const svgClone = svgElement.cloneNode(true);
+        const foreignObjectClone = svgClone.querySelector('foreignObject');
+
+        // Embed font
+        const fontURL = 'https://fonts.gstatic.com/s/sourcesans3/v11/nwpStKy2OAdR1K-IwhWPwx_swAvT90imenQSS0MM33Jkcb7u.woff2';
+        try {
+            const fontDataUrl = await getFontDataURL(fontURL);
+            const styleElement = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+            styleElement.textContent = `@font-face { font-family: 'Source Sans 3'; src: url(${fontDataUrl}) format('woff2'); font-weight: 400; font-style: normal; }`;
+            const defs = svgClone.querySelector('defs') || svgClone.insertBefore(document.createElementNS('http://www.w3.org/2000/svg', 'defs'), svgClone.firstChild);
+            defs.appendChild(styleElement);
+        } catch (error) {
+            console.error("Failed to embed font.", error);
+        }
+
+        // Get text properties
+        const computedStyle = window.getComputedStyle(textElement);
+        const textContent = textElement.innerText || ' ';
+        const maxWidth = parseFloat(foreignObjectClone.getAttribute('width')) - 5; // Slightly reduce width for safety
+        const x = parseFloat(foreignObjectClone.getAttribute('x'));
+        const y = parseFloat(foreignObjectClone.getAttribute('y'));
+        
+        // Calculate actual line height
+        let lineHeight = parseFloat(computedStyle.lineHeight);
+        if (isNaN(lineHeight)) {
+            lineHeight = parseFloat(computedStyle.fontSize) * 1.2;
+        }
+
+        // Create temporary canvas for text measurement
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.font = `${computedStyle.fontWeight} ${computedStyle.fontSize} "${computedStyle.fontFamily.replace(/['"]/g, '')}"`;
+        
+        const lines = wrapText(tempCtx, textContent, maxWidth);
+        
+        // Calculate the required height for the text
+        const calculatedTextHeight = lines.length * lineHeight;
+        
+        // If calculated height exceeds current bounds, adjust the SVG
+        if (calculatedTextHeight > currentForeignHeight - SAFETY_BUFFER) {
+            const verticalPadding = h1 - h2;
+            const newSvgHeight = calculatedTextHeight + verticalPadding + SAFETY_BUFFER;
+            updateSvgDimensions(svgClone, newSvgHeight);
+        }
+        
+        // Create SVG text element with clipping
+        const clipId = 'textClip' + Date.now();
+        const clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
+        clipPath.setAttribute('id', clipId);
+        const clipRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        clipRect.setAttribute('x', x);
+        clipRect.setAttribute('y', y);
+        clipRect.setAttribute('width', parseFloat(foreignObjectClone.getAttribute('width')));
+        clipRect.setAttribute('height', parseFloat(foreignObjectClone.getAttribute('height')) - 5); // Leave some margin at bottom
+        clipPath.appendChild(clipRect);
+        
+        const defs = svgClone.querySelector('defs');
+        defs.appendChild(clipPath);
+        
+        // Create text element
+        const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        svgText.setAttribute('x', x);
+        svgText.setAttribute('y', y);
+        svgText.setAttribute('font-family', "'Source Sans 3', sans-serif");
+        svgText.setAttribute('font-size', computedStyle.fontSize);
+        svgText.setAttribute('font-weight', computedStyle.fontWeight);
+        svgText.setAttribute('fill', computedStyle.color);
+        svgText.setAttribute('dominant-baseline', 'hanging');
+        svgText.setAttribute('clip-path', `url(#${clipId})`); // Apply clipping
+
+        lines.forEach((line, index) => {
+            const tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+            tspan.setAttribute('x', x);
+            tspan.setAttribute('dy', index === 0 ? 0 : lineHeight + 'px');
+            tspan.textContent = line;
+            svgText.appendChild(tspan);
+        });
+        
+        foreignObjectClone.parentNode.replaceChild(svgText, foreignObjectClone);
+
+        // Get final height for rendering
+        const finalSvgHeight = parseFloat(svgClone.getAttribute('height'));
+
+        // Render to canvas and download
+        const svgString = new XMLSerializer().serializeToString(svgClone);
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
         const img = new Image();
-        img.onload = function() {
-            c.width = thing.getAttribute('width');
-            c.height = thing.getAttribute('height');
-            ctx.drawImage(img, 0, 0);
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const svgWidth = parseFloat(svgElement.getAttribute('width'));
             
-            c.toBlob(function(b) {
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(b);
-                a.download = 'pic.png';
-                a.click();
-            });
+            canvas.width = svgWidth * scale;
+            canvas.height = finalSvgHeight * scale;
             
+            const ctx = canvas.getContext('2d');
+            ctx.scale(scale, scale);
+            ctx.drawImage(img, 0, 0, svgWidth, finalSvgHeight);
+
+            URL.revokeObjectURL(url);
+            
+            const firstLine = lines[0] || 'dialog';
+            const filename = (firstLine.replace(/[\\/*?:"<>|]/g, '').trim().substring(0, 50) || 'dialog') + '.png';
+            
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        };
+        img.onerror = (e) => {
+            console.error("Failed to load SVG into image.", e);
             URL.revokeObjectURL(url);
         };
-        
         img.src = url;
     }
 </script>
 
 </body>
-
 </html>
